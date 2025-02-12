@@ -1,0 +1,28 @@
+clear all;
+load 'y.mat'; % 加载信号数据
+y = y(:); % 确保 y 是列向量
+
+% 绘制原始信号
+figure;
+plot(y);
+title('原始信号 y');
+
+% 计算傅里叶变换的幅值和相位
+A = abs(fft(y)) / (length(y)/2); % 归一化幅值
+A(1) = A(1) / 2; % 直流分量幅值减半
+P = angle(fft(y)); % 计算相位
+
+% 初始化重建信号
+theta = linspace(0, 2*pi, length(y)).'; % 定义 theta 为列向量
+y_re = A(1); % 初始化 y_re 为直流分量
+
+% 重建信号
+for i = 2 : floor(length(y)/2) % 遍历前半部分频率分量
+    y_re = y_re + A(i) * cos(theta * (i-1) + P(i)); % 累加各频率分量
+end
+
+% 绘制重建信号
+hold on;
+plot(y_re, 'r--');
+title('原始信号 y 和重建信号 y_{re}');
+legend('原始信号', '重建信号');
